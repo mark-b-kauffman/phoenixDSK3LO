@@ -1,0 +1,36 @@
+<!-- templates/course/index.html.eex -->
+<div class="jumbotron">
+  <h4>Courses & Organizations from <%= @fqdn %> </h4>
+  <h6>Rendered by templates/course/index.html.eex</h6>
+</div>
+
+<div class="col-lg-6" align="left" style="clear: both;">
+      <b>Submit a courseId to edit, or select a courseId from the list that follows.</b>
+</div>
+<div class="col-lg-6" style="clear: both;">
+    <%= form_for @conn, course_path(@conn, :select), [as: :session, method: :get], fn f2 -> %>
+      <%= text_input f2, :newCourseId %>
+      <%= submit "Submit" %>
+    <%end %>
+</div>
+
+<div class="col-lg-12">
+      <table class="table">
+        <tr  style="font-weight:bold">
+          <td> courseId/organizationId </td>
+          <td> organization? </td>
+          <td> name </td>
+          <td> dsk externalId </td>
+          <td> availability </td>
+        </tr>
+      <%= for course <- @courseList do %>
+        <tr>
+          <td> <%= link course.courseId, to: course_path(@conn, :show, course.courseId) %> </td>
+          <td> <%= course.organization %> </td>
+          <td> <%= course.name %> </td>
+          <td> <%= @dskMap[course.dataSourceId].externalId %> </td>
+          <td> <%= course.availability["available"] %> </td>
+        </tr>
+      <%= end %>
+    </table>
+</div>

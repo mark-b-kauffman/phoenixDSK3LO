@@ -1,0 +1,67 @@
+<!-- templates/user/show.html.eex -->
+<%= if @user.userName do %>
+<div class="jumbotron">
+  <h4><%= @user.userName %> </h4>
+  <h6>Rendered by templates/user/show.html.eex.</h6>
+</div>
+<div class="col-lg-6">
+  <table class="table">
+    <tr  style="font-weight:bold">
+      <td>externalId</td>
+      <td>userName</td>
+      <td>email</td>
+      <td>dsk externalId</td>
+      <td>availability</td>
+    </tr>
+    <tr>
+      <td> <%= @user.externalId %> </td>
+      <td> <%= @user.userName %> </td>
+      <td> <%= @user.contact["email"] %> </td>
+      <td> <%= @dskMap[@user.dataSourceId].externalId %> </td>
+      <td> <%= @user.availability["available"] %> </td>
+    </tr>
+</table>
+</div>
+
+<div class="col-lg-6" align="left" style="clear: both;">
+      <b>Update User</b>
+</div>
+
+<div class="col-lg-6" style="clear: both;">
+      <%= form_for @conn, user_path(@conn, :update, @user.userName), [as: :session], fn f -> %>
+          <%# Here's the syntax to write a comment that isn't rendered. Same as Rails.
+          <%= select f, :newdsk, ["SYSTEM": "SYSTEM", "other": "other"], selected: @dskMap[@user.dataSourceId]["externalId"] % -->
+          <!-- select(form, :user_id, users |> Enum.map(&{&1.name, &1.id})) -->
+          <!-- The following is a re-write of the above for our usage. dskList is a list of maps derived from the dskMap. -->
+          #dskMap is a map of structs
+          # %{"_33_1" => %Learn.Dsk{ description: "zdesc13", externalId: "zid13", id: "_33_1"}, "_75_1" => %Learn.Dsk ... }
+          #dskList is a list of maps
+          # [ %Learn.Dsk{description: "blah.", externalId: "INTERNAL", id: "_1_1" }, %Learn.Dsk ... ]
+          %>
+          <%= hidden_input f, :newUser, [value: "#{@user.userName}"] %>
+
+          <!-- %= select f, :selected_dsk,  @dskList |> Enum.map(&{&1["externalId"], &1["id"]}), selected: @dskMap[@user.dataSourceId]["id"]  % -->
+
+          <%= select f, :selected_dsk,  @dskList |> Enum.map(&{Map.get(&1,:externalId), Map.get(&1,:id)}), selected: @dskMap[@user.dataSourceId].id  %>
+          <%#  Must be of the format ["Yes":], ["Yes" :] will bomb! It's an atom...  %>
+          <%= select f, :selected_avail, ["Yes": "Yes", "No": "No", "Disabled": "Disabled"], selected: @user.availability["available"] %>
+          <%= submit "Submit" %>
+      <%end %>
+</div>
+
+<div class="col-lg-6" align="left" style="clear: both;">
+      <b>Select a Different User</b>
+</div>
+<div class="col-lg-6" style="clear: both;">
+    <%= form_for @conn, user_path(@conn, :update, @user.userName), [as: :session], fn f2 -> %>
+      <%= text_input f2, :newUser, [value: "#{@user.userName}"] %>
+      <%= submit "Change" %>
+    <%end %>
+</div>
+
+<%= else %>
+<div class="jumbotron">
+  <h4><%= @userName %> Not Found </h4>
+  <h6>Rendered by templates/user/show.html.eex.</h6>
+</div>
+<%= end %>
