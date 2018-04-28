@@ -8,15 +8,36 @@ defmodule ThreeLeggedAuth do
 
   def init(opts), do: opts
 
-  def call(conn, correct_auth_details) do
-    # get_req_header(conn, key) Returns the values of the request header specified by key
-    # values is plural, hence a list. The values of the authorization header looks like:
-    # ["Basic dXNlcjM6c2VjcmV0Mw=="]
-    Logger.info IO.inspect(get_req_header(conn, "authorization"), [])
-    case get_req_header(conn, "authorization") do
-      ["Basic " <> auth] -> verify(conn, auth, correct_auth_details)
-      _                  -> unauthorized(conn)
+  def call(conn, [fqdn: fqdn]) do
+    # Plug protocol is that the Plug always returns the conn (connection).
+    IO.inspect(fqdn)
+    token_map = LearnRestClient.get(String.to_atom(fqdn), "tokenMap")
+    IO.inspect(token_map)
+    threelo_code = LearnRestClient.get(String.to_atom(fqdn),"threelo_code")
+    IO.inspect(threelo_code)
+
+    case (threelo_code) do
+      nil -> get_code(conn, fqdn)
+      _ -> conn
     end
+
+  end
+
+  # First leg of three_legged_oauth - login to get a code.
+  # The code is then used to get an access token.
+  def get_code(conn, fqdn) do
+    app_key = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:appkey]
+    %{req_headers: req_headers } = conn
+    headers_map = Enum.into req_headers, %{} # turn the list of tuples into a map
+    host = headers_map["host"]
+    redirect_uri = "redirect_uri=http://#{host}/code_callback&response_type=code&client_id=#{app_key}&scope=read"
+    IO.inspect redirect_uri, []
+    authcode_url = LearnRestClient.get_authcode_url(fqdn)
+    authcode_url = authcode_url <> "?#{redirect_uri}"
+    conn
+    |> put_resp_header("location", authcode_url)
+    |> send_resp(303, "")
+    |> halt
   end
 
   defp verify(conn, attempted_auth, [username: username, password: password]) do

@@ -14,9 +14,8 @@ defmodule PhoenixDSK3LO.Router do
   end
 
   pipeline :login do
-    username = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:phoenix_dsk_user]
-    password = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:phoenix_dsk_pwd]
-    plug ThreeLeggedAuth, username: username, password: password
+    fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
+    plug ThreeLeggedAuth, fqdn: fqdn
   end
 
   scope "/", PhoenixDSK3LO do
