@@ -18,6 +18,8 @@ defmodule PhoenixDSK3LO.Router do
     plug ThreeLeggedAuth, fqdn: fqdn
   end
 
+  forward "/code_callback", PhoenixDSK3LO.ThreeLeggedCallback
+
   scope "/", PhoenixDSK3LO do
     pipe_through [:browser, :login] # Use the default browser stack
 

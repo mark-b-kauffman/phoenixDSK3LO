@@ -10,6 +10,7 @@ defmodule ThreeLeggedAuth do
 
   def call(conn, [fqdn: fqdn]) do
     # Plug protocol is that the Plug always returns the conn (connection).
+    IO.puts :stdio, "ENTER ThreeLeggedAuth.call"
     IO.inspect(fqdn)
     token_map = LearnRestClient.get(String.to_atom(fqdn), "tokenMap")
     IO.inspect(token_map)
@@ -20,7 +21,8 @@ defmodule ThreeLeggedAuth do
       nil -> get_code(conn, fqdn)
       _ -> conn
     end
-
+    IO.puts :stdio, "EXIT ThreeLeggedAuth.call"
+    conn
   end
 
   # First leg of three_legged_oauth - login to get a code.
