@@ -14,7 +14,7 @@ defmodule ThreeLeggedAuth do
     IO.inspect(fqdn)
     token_map = LearnRestClient.get(String.to_atom(fqdn), "tokenMap")
     IO.inspect(token_map)
-    threelo_code = LearnRestClient.get(String.to_atom(fqdn),"threelo_code")
+    threelo_code = LearnRestClient.get(String.to_atom(fqdn),"THREELO_CODE")
     IO.inspect(threelo_code)
 
     case (threelo_code) do

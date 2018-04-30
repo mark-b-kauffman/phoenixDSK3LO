@@ -10,9 +10,16 @@ defmodule PhoenixDSK3LO.ThreeLeggedCallback do
 
   def call(conn, _opts) do
     IO.puts :stdio, "ENTER ThreeLeggedCallback.call"
+    %{params: params} = conn
+    %{"code" => code} = params
+    IO.inspect params, []
+    IO.inspect code, []
+    fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
+    fqdnAtom = String.to_atom(fqdn)
+    LearnRestClient.put(fqdnAtom, "THREELO_CODE", code)
     conn
     |> put_resp_header("location", "/")
-    |> send_resp(301, "") 
+    |> send_resp(301, "")
     |> halt
     # Can't add any lines here because that confuses the framework and we get
     # exceptions like:
