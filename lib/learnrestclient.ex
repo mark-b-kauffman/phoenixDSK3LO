@@ -75,6 +75,7 @@ defmodule LearnRestClient do
 
   @doc """
   Puts the `value` for the given `key` in the `bucket` with the given name.
+    Agent.update returns :ok on success => this function does as well.
   """
   def put(name, key, value) do
     Agent.update(name, &Map.put(&1, key, value))
@@ -116,14 +117,19 @@ defmodule LearnRestClient do
      # the system and keep associated with the Agent for the system.
      # 2014.04.18 Storing the DSKs seemed like a good idea on first
      # writing. We'll revisit this later as it may not be necessary,
-     # or good design.
+     # or good design. - See below. No more storing DSKs on startup.
 
      # 2017.12.29 MBK Moved the authorization off to a separate method. This so we can
      # switch from basic_auth to three-legged
      fqdnAtom = String.to_atom(fqdn)
      LearnRestClient.start_link(fqdnAtom)
      LearnRestClient.put(fqdnAtom, "FQDN", fqdn)
-     {:ok, tokenMap} = get_authorization(fqdn)
+
+     # 2018.05.09 Can we remove the following so we don't attempt to auth
+     # until the user does something? Yes. No longer get the Learn server
+     # auth on startup. Instead just do it on the first request to the
+     # Learn server.
+     # {:ok, tokenMap} = get_authorization(fqdn)
 
      # Now we can do:
      # fqdn = "bd-partner-a-original-new.blackboard.com"
@@ -132,9 +138,13 @@ defmodule LearnRestClient do
      # LearnRestClient.get(fqdnAtom, "tokenMap")
      # client["dskMap"] client["tokenMap"]["access_token"] client["dskMap"]["_17_1"]["description"]
      # LearnRestClient.get(fqdnAtom, "dskMap")
-     {:ok, responesMapUnused, theDskMap} = LearnRestClient.get_data_sources(fqdn)
+
+     # 2018.05.09 - We quit doing this on startup and do it when we need
+     # the dsks. So we also quit storing anything on startup.
+     # {:ok, responesMapUnused, theDskMap} = LearnRestClient.get_data_sources(fqdn)
      # IEx.pry
-     {:ok, %{"fqdn"=>fqdn, "tokenMap" => tokenMap, "dskMap" => theDskMap}}
+
+     # {:ok, %{"fqdn"=>fqdn, "tokenMap" => tokenMap, "dskMap" => theDskMap}}
    end
 
    @doc """
@@ -144,12 +154,16 @@ defmodule LearnRestClient do
       token we have expiring.
    """
    def get_basic_access_token_map(fqdn) do
+     IO.puts :stdio, "ENTER get_basic_access_token_map"
      fqdnAtom = String.to_atom(fqdn)
      if LearnRestClient.get(fqdnAtom, "tokenExpireTime") - System.system_time(:second) < 10 do
        fqdn = Atom.to_string(fqdnAtom)
        post_basic_auth(fqdn)
      end
-     LearnRestClient.get(fqdnAtom,"tokenMap")
+     # A token map looks like the following:
+     # %{"access_token" => "DwhRsKw2OeUN5sYm38AxFiHrinlFnWWC", "expires_in" => 1812, "token_type" => "bearer"}
+     tokenMap = LearnRestClient.get(fqdnAtom,"tokenMap")
+     {:ok, tokenMap}
    end
 
    @doc """
@@ -161,17 +175,20 @@ defmodule LearnRestClient do
      # success returns a tuple {:ok, tokenMap}
      # Does the client currently have a token map? If not, get one.
      case tokenMap = LearnRestClient.get(String.to_atom(fqdn), "tokenMap") do
-       nil -> tokenMap = post_basic_auth(fqdn)
-       _ -> get_basic_access_token_map(fqdn)
+       nil -> {result, tokenMap} = post_basic_auth(fqdn)
+       _ -> {result, tokenMap} = get_basic_access_token_map(fqdn)
      end
-     {:ok, tokenMap}
+     {result, tokenMap}
   end
 
    ###### BASIC AUTH #####
    @doc """
    Basic Authroization. Return :ok with the tokenMap, or :error with an empty map
+   # A token map looks like the following:
+   # %{"access_token" => "DwhRsKw2OeUN5sYm38AxFiHrinlFnWWC", "expires_in" => 1812, "token_type" => "bearer"}
    """
    def post_basic_auth(fqdn) do
+     IO.puts :stdio, "ENTER post_basic_auth"
      fqdnAtom = String.to_atom(fqdn)
      url = get_oauth_url(fqdn)
      potionOptions = get_oauth_potion_options()
@@ -370,6 +387,8 @@ defmodule LearnRestClient do
      # get_authorization dynamically gets either the cached token or
      # gets a new one, using  basic auth or three-legged.
      {:ok, tokenMap} = get_authorization(Atom.to_string(fqdnAtom))
+     # IO.puts :stdio, "tokenMap:"
+     # IO.inspect tokenMap, []
      accessToken = tokenMap["access_token"]
      # Return the list of header items.
      ["Content-Type": "application/json", "Authorization": "Bearer #{accessToken}"]

@@ -29,16 +29,24 @@ defmodule ThreeLeggedAuth do
   # The code is then used to get an access token.
   def get_code(conn, fqdn) do
     app_key = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:appkey]
+
     %{req_headers: req_headers } = conn
     headers_map = Enum.into req_headers, %{} # turn the list of tuples into a map
     host = headers_map["host"]
     redirect_uri = "redirect_uri=http://#{host}/code_callback&response_type=code&client_id=#{app_key}&scope=read"
     IO.inspect redirect_uri, []
+    options = [ domain: "localhost", path: "/", max_age: 100000*24*60*60]
+    IO.inspect options, []
+
+
     authcode_url = LearnRestClient.get_authcode_url(fqdn)
     authcode_url = authcode_url <> "?#{redirect_uri}"
-    conn
+    conn = conn
     |> put_resp_header("location", authcode_url)
-    |> send_resp(303, "")
+    |> put_resp_cookie("A_COOKIE", "chocolate_chip", options)
+    IO.inspect conn, []
+#    send_resp(conn, 200, "Hello world") # playing around with cookies here.
+    send_resp(conn, 303, "")
     |> halt
   end
 
