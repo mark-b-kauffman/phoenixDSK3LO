@@ -18,7 +18,7 @@ defmodule PhoenixDSK3LO.ThreeLeggedCallback do
     fqdnAtom = String.to_atom(fqdn)
     LearnRestClient.put(fqdnAtom, "THREELO_CODE", code)
     conn
-    |> put_resp_header("location", "/")
+    |> put_resp_header("location", "/dsks")
     |> send_resp(301, "")
     |> halt
     # Can't add any lines here because that confuses the framework and we get
