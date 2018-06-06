@@ -88,7 +88,7 @@ defmodule LearnRestClient do
 
  """
  def start_demo() do
-   fqdn = "bd-partner-a-original-new.blackboard.com"
+   fqdn = "bd-partner-a-original.blackboard.com"
    fqdnAtom = String.to_atom(fqdn)
    client=LearnRestClient.start_client(fqdn)
    %{ "fqdn"=>fqdn, "fqdnAtom" => fqdnAtom, "client" => client }
@@ -132,7 +132,7 @@ defmodule LearnRestClient do
      # {:ok, tokenMap} = get_authorization(fqdn)
 
      # Now we can do:
-     # fqdn = "bd-partner-a-original-new.blackboard.com"
+     # fqdn = "bd-partner-a-original.blackboard.com"
      # fqdnAtom = String.to_atom(fqdn)
      # client=LearnRestClient.start_client(fqdn)
      # LearnRestClient.get(fqdnAtom, "tokenMap")
@@ -158,7 +158,7 @@ defmodule LearnRestClient do
      fqdnAtom = String.to_atom(fqdn)
      if LearnRestClient.get(fqdnAtom, "tokenExpireTime") - System.system_time(:second) < 10 do
        fqdn = Atom.to_string(fqdnAtom)
-       post_basic_auth(fqdn)
+       post_oauth2_token(fqdn)
      end
      # A token map looks like the following:
      # %{"access_token" => "DwhRsKw2OeUN5sYm38AxFiHrinlFnWWC", "expires_in" => 1812, "token_type" => "bearer"}
@@ -175,7 +175,7 @@ defmodule LearnRestClient do
      # success returns a tuple {:ok, tokenMap}
      # Does the client currently have a token map? If not, get one.
      case tokenMap = LearnRestClient.get(String.to_atom(fqdn), "tokenMap") do
-       nil -> {result, tokenMap} = post_basic_auth(fqdn)
+       nil -> {result, tokenMap} = post_oauth2_token(fqdn)
        _ -> {result, tokenMap} = get_basic_access_token_map(fqdn)
      end
      {result, tokenMap}
@@ -187,8 +187,8 @@ defmodule LearnRestClient do
    # A token map looks like the following:
    # %{"access_token" => "DwhRsKw2OeUN5sYm38AxFiHrinlFnWWC", "expires_in" => 1812, "token_type" => "bearer"}
    """
-   def post_basic_auth(fqdn) do
-     IO.puts :stdio, "ENTER post_basic_auth"
+   def post_oauth2_token(fqdn) do
+     IO.puts :stdio, "ENTER post_oauth2_token"
      fqdnAtom = String.to_atom(fqdn)
      url = get_oauth_url(fqdn)
      potionOptions = get_oauth_potion_options()
