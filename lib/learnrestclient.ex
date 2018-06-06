@@ -4,7 +4,7 @@
 # 2017.03.24 MBK - moved appkey and appsecret to config/dev.exs.
 # 2017.12.27 MBK - When we get an access token, we calculate and save the time it will expire.
 # get_json_request_headers always calls get_authorization. We get a new one as necessary.
-# For basic auth, the expiry check is in get_basic_access_token_map
+# For basic auth, the expiry check is in get_access_token_map
 # require IEx
 defmodule LearnRestClient do
   require Logger
@@ -153,8 +153,8 @@ defmodule LearnRestClient do
       to get an OAuth access token when we're within 10 seconds of the
       token we have expiring.
    """
-   def get_basic_access_token_map(fqdn) do
-     IO.puts :stdio, "ENTER get_basic_access_token_map"
+   def get_access_token_map(fqdn) do
+     IO.puts :stdio, "ENTER get_access_token_map"
      fqdnAtom = String.to_atom(fqdn)
      if LearnRestClient.get(fqdnAtom, "tokenExpireTime") - System.system_time(:second) < 10 do
        fqdn = Atom.to_string(fqdnAtom)
@@ -176,7 +176,7 @@ defmodule LearnRestClient do
      # Does the client currently have a token map? If not, get one.
      case tokenMap = LearnRestClient.get(String.to_atom(fqdn), "tokenMap") do
        nil -> {result, tokenMap} = post_oauth2_token(fqdn)
-       _ -> {result, tokenMap} = get_basic_access_token_map(fqdn)
+       _ -> {result, tokenMap} = get_access_token_map(fqdn)
      end
      {result, tokenMap}
   end
