@@ -10,10 +10,14 @@ defmodule PhoenixDSK3LO.DskController do
   so web/templates/dsk.
   """
   def index(conn, _params) do
-    fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
-    {:ok, dskList} = Lms.all(fqdn, Learn.Dsk, "allpages")
-    # IEx.pry
-    render conn, "index.html", dskList: dskList, fqdn: fqdn
+    try do
+      fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
+      {:ok, dskList} = Lms.all(fqdn, Learn.Dsk, "allpages")
+      # IEx.pry
+      render conn, "index.html", dskList: dskList, fqdn: fqdn
+    rescue
+      _ -> render conn, "error.html"  
+    end
   end
 
 end

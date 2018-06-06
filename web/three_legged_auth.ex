@@ -33,14 +33,19 @@ defmodule ThreeLeggedAuth do
     %{req_headers: req_headers } = conn
     headers_map = Enum.into req_headers, %{} # turn the list of tuples into a map
     host = headers_map["host"]
-    redirect_uri = "redirect_uri=http://#{host}/code_callback&response_type=code&client_id=#{app_key}&scope=read"
+    redirect_uri = "http://#{host}/code_callback"
+    fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
+    fqdnAtom = String.to_atom(fqdn)
+    # save our redirect_uri for use when we get the access_token
+    LearnRestClient.put(fqdnAtom, "REDIRECT_URI", redirect_uri)
+    redirect_url = "redirect_uri=#{redirect_uri}&response_type=code&client_id=#{app_key}&scope=read%20offline"
     IO.inspect redirect_uri, []
     options = [ domain: "localhost", path: "/", max_age: 100000*24*60*60]
     IO.inspect options, []
 
 
     authcode_url = LearnRestClient.get_authcode_url(fqdn)
-    authcode_url = authcode_url <> "?#{redirect_uri}"
+    authcode_url = authcode_url <> "?#{redirect_url}"
     conn = conn
     |> put_resp_header("location", authcode_url)
     |> put_resp_cookie("A_COOKIE", "chocolate_chip", options)

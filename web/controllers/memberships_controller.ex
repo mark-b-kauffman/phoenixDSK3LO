@@ -45,17 +45,21 @@ defmodule PhoenixDSK3LO.MembershipsController do
   so web/templates/course.
   """
   def index(conn, _params) do
-    fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
-    {:ok, courseList} = Lms.all(fqdn, Learn.Course) # List of structs
-    # Now that we do the following we have to change how the template accesses the data.
-    # The keys are no longer strings so we have to use the . notation.
-    {:ok, dskList} = Lms.all(fqdn, Learn.Dsk, "allpages")
-    # dskList is a list of maps
-    # [ %Learn.Dsk{description: "blah.", externalId: "INTERNAL", id: "_1_1" }, %Learn.Dsk ... ]
-    mapout = %{}
-    dskMap = LearnRestUtil.listofstructs_to_mapofstructs( dskList, mapout, :id )
-    #dskMap is a map of structs
-    render conn, "index.html", courseList: courseList, dskMap: dskMap, fqdn: fqdn
+    try do
+      fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
+      {:ok, courseList} = Lms.all(fqdn, Learn.Course) # List of structs
+      # Now that we do the following we have to change how the template accesses the data.
+      # The keys are no longer strings so we have to use the . notation.
+      {:ok, dskList} = Lms.all(fqdn, Learn.Dsk, "allpages")
+      # dskList is a list of maps
+      # [ %Learn.Dsk{description: "blah.", externalId: "INTERNAL", id: "_1_1" }, %Learn.Dsk ... ]
+      mapout = %{}
+      dskMap = LearnRestUtil.listofstructs_to_mapofstructs( dskList, mapout, :id )
+      #dskMap is a map of structs
+      render conn, "index.html", courseList: courseList, dskMap: dskMap, fqdn: fqdn
+    rescue
+      _ -> render conn, "error.html"
+    end
   end
 
   @doc """

@@ -45,16 +45,20 @@ defmodule PhoenixDSK3LO.CourseController do
   so web/templates/course.
   """
   def index(conn, _params) do
-    fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
-    {:ok, courseList} = Lms.all(fqdn, Learn.Course) # List of structs
-    # {:ok, intentionallyUnused, dskMap } = LearnRestClient.get_data_sources(fqdn)
-    {:ok, dskList} = Lms.all(fqdn, Learn.Dsk, "allpages")
-    # dskList is a list of maps
-    # [ %Learn.Dsk{description: "blah.", externalId: "INTERNAL", id: "_1_1" }, %Learn.Dsk ... ]
-    mapout = %{}
-    dskMap = LearnRestUtil.listofstructs_to_mapofstructs( dskList, mapout, :id )
-    #dskMap is a map of structs
-    render conn, "index.html", courseList: courseList, dskMap: dskMap, fqdn: fqdn
+    try do
+      fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
+      {:ok, courseList} = Lms.all(fqdn, Learn.Course) # List of structs
+      # {:ok, intentionallyUnused, dskMap } = LearnRestClient.get_data_sources(fqdn)
+      {:ok, dskList} = Lms.all(fqdn, Learn.Dsk, "allpages")
+      # dskList is a list of maps
+      # [ %Learn.Dsk{description: "blah.", externalId: "INTERNAL", id: "_1_1" }, %Learn.Dsk ... ]
+      mapout = %{}
+      dskMap = LearnRestUtil.listofstructs_to_mapofstructs( dskList, mapout, :id )
+      #dskMap is a map of structs
+      render conn, "index.html", courseList: courseList, dskMap: dskMap, fqdn: fqdn
+    rescue
+      _ -> render conn, "error.html"
+    end
   end
 
   @doc """

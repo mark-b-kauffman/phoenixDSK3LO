@@ -1,0 +1,5 @@
+<!-- templates/memberships/error.html.eex -->
+<div class="jumbotron">
+  <h4> Logged in Learn User Account Can Not Access This Functionality </h2>
+  <h6>Rendered by templates/memberships/error.html.eex</h6>
+</div>

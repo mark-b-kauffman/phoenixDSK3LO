@@ -45,15 +45,19 @@ defmodule PhoenixDSK3LO.UserController do
   so web/templates/user.
   """
   def index(conn, _params) do
-    fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
-    {:ok, userList} = Lms.all(fqdn, Learn.User) # List of structs
-    # {:ok, intentionallyUnused, dskMap } = LearnRestClient.get_data_sources(fqdn)
-    {:ok, dskList} = Lms.all(fqdn, Learn.Dsk, "allpages")
-    # IEx.pry
-    mapout = %{}
-    dskMap = LearnRestUtil.listofstructs_to_mapofstructs( dskList, mapout, :id )
-    # IEx.pry
-    render conn, "index.html", userList: userList, dskMap: dskMap, fqdn: fqdn
+    try do
+      fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
+      {:ok, userList} = Lms.all(fqdn, Learn.User) # List of structs
+      # {:ok, intentionallyUnused, dskMap } = LearnRestClient.get_data_sources(fqdn)
+      {:ok, dskList} = Lms.all(fqdn, Learn.Dsk, "allpages")
+      # IEx.pry
+      mapout = %{}
+      dskMap = LearnRestUtil.listofstructs_to_mapofstructs( dskList, mapout, :id )
+      # IEx.pry
+      render conn, "index.html", userList: userList, dskMap: dskMap, fqdn: fqdn
+    rescue
+      _ -> render conn, "error.html"
+    end
   end
 
   def select(conn, %{"session" => session}) do

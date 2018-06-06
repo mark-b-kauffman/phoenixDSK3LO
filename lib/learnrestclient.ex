@@ -160,7 +160,7 @@ defmodule LearnRestClient do
        fqdn = Atom.to_string(fqdnAtom)
        post_oauth2_token(fqdn)
      end
-     # A token map looks like the following:
+     # A 2LO token map looks like the following:
      # %{"access_token" => "DwhRsKw2OeUN5sYm38AxFiHrinlFnWWC", "expires_in" => 1812, "token_type" => "bearer"}
      tokenMap = LearnRestClient.get(fqdnAtom,"tokenMap")
      {:ok, tokenMap}
@@ -181,17 +181,34 @@ defmodule LearnRestClient do
      {result, tokenMap}
   end
 
-   ###### BASIC AUTH #####
+   ###### 3LO AUTH #####
    @doc """
-   Basic Authroization. Return :ok with the tokenMap, or :error with an empty map
-   # A token map looks like the following:
-   # %{"access_token" => "DwhRsKw2OeUN5sYm38AxFiHrinlFnWWC", "expires_in" => 1812, "token_type" => "bearer"}
+   3LO Authroization. Return :ok with the tokenMap, or :error with an empty map
+   A 2LOtoken map looks like the following:
+   %{"access_token" => "DwhRsKw2OeUN5sYm38AxFiHrinlFnWWC", "expires_in" => 1812, "token_type" => "bearer"}
+   But, here we have an authorization code from our 3LO login. We're going to
+   use that to get an access token based on that code. The first time through
+   this we have a code, but haven't got the access_token yet. Note that we'll
+   come through here again as our access_token is about to expire. Then,
+   instead of the authorization code, we'll append the refresh_token to the
+   url we're accessing.
    """
    def post_oauth2_token(fqdn) do
      IO.puts :stdio, "ENTER post_oauth2_token"
      fqdnAtom = String.to_atom(fqdn)
-     url = get_oauth_url(fqdn)
-     potionOptions = get_oauth_potion_options()
+     potionOptions = get_oauth_potion_options(fqdnAtom)
+     [body: body, headers: _headers, basic_auth: _auth] = potionOptions
+     redirect_uri = LearnRestClient.get(fqdnAtom, "REDIRECT_URI")
+     case body do
+      "grant_type=authorization_code" ->
+          code = LearnRestClient.get(fqdnAtom, "THREELO_CODE")
+          url = "#{get_oauth_url(fqdn)}" <> "?code=#{code}&redirect_uri=#{redirect_uri}"
+      "grant_type=refresh_token" ->
+          token_map = LearnRestClient.get_access_token_map(fqdn)
+          refresh_token = token_map["refresh_token"]
+          url = "#{get_oauth_url(fqdn)}" <> "?refresh_token=#{refresh_token}&redirect_uri=#{redirect_uri}"
+     end
+
      response = HTTPotion.post(url, potionOptions)
      result = case response do
        %HTTPotion.Response{} ->
@@ -528,8 +545,11 @@ defmodule LearnRestClient do
   Get the oauth request body.
 
   """
-  def get_oauth_request_body() do
-    "grant_type=client_credentials"
+  def get_oauth_request_body(fqdnAtom) do
+    case LearnRestClient.get(fqdnAtom,"tokenMap") do
+      nil ->   "grant_type=authorization_code"
+      _ -> "grant_type=refresh_token"
+    end
   end
 
   @doc """
@@ -537,10 +557,10 @@ defmodule LearnRestClient do
   pass to HTTPotion, NOT HTTP options.
 
   """
-  def get_oauth_potion_options() do
+  def get_oauth_potion_options(fqdnAtom) do
     appkey = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:appkey]
     appsecret = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:appsecret]
-    [body: "#{get_oauth_request_body()}",
+    [body: "#{get_oauth_request_body(fqdnAtom)}",
      headers: ["Content-Type": "application/x-www-form-urlencoded"],
      basic_auth: {appkey,appsecret}]
   end
