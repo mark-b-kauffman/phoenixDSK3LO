@@ -152,6 +152,16 @@ defmodule LearnRestClient do
       The key point here is that we start making calls to the Learn server
       to get an OAuth access token when we're within 10 seconds of the
       token we have expiring.
+
+      A 3LO token map looks like the following:
+    %{
+      "access_token" => "6tVhR8MTc9AE39P9Lh39v1bleVF5duSS",
+      "expires_in" => 3599,
+      "refresh_token" => "1da16a2751ce4950b2d1ab4c3a1f7a15:FXfDbzt404KBKcqZnGiDMhiwej1Gbhn2",
+      "scope" => "*",
+      "token_type" => "bearer",
+      "user_id" => "1da16a2751ce4950b2d1ab4c3a1f7a15"
+     }
    """
    def get_access_token_map(fqdn) do
      IO.puts :stdio, "ENTER get_access_token_map"
@@ -160,8 +170,7 @@ defmodule LearnRestClient do
        fqdn = Atom.to_string(fqdnAtom)
        post_oauth2_token(fqdn)
      end
-     # A 2LO token map looks like the following:
-     # %{"access_token" => "DwhRsKw2OeUN5sYm38AxFiHrinlFnWWC", "expires_in" => 1812, "token_type" => "bearer"}
+
      tokenMap = LearnRestClient.get(fqdnAtom,"tokenMap")
      {:ok, tokenMap}
    end
