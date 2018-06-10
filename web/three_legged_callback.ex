@@ -1,5 +1,9 @@
-# Credit to https://github.com/paulfedory/how_to_watch_tv/blob/master/web/basic_auth.ex
-# https://medium.com/@paulfedory/basic-authentication-in-your-phoenix-app-fa24e57baa8
+# File: three_legged_auth.ex
+# Purpose: We come back here after the 3LO login. Save off the authorization code,
+#   then immediatly make a request for dsks that takes us through the code that
+#   gets an access_token.
+# Author: Mark Bykerk Kauffman
+
 defmodule PhoenixDSK3LO.ThreeLeggedCallback do
   import Plug.Conn
   require Logger

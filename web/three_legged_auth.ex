@@ -1,5 +1,7 @@
-# Credit to https://github.com/paulfedory/how_to_watch_tv/blob/master/web/basic_auth.ex
-# https://medium.com/@paulfedory/basic-authentication-in-your-phoenix-app-fa24e57baa8
+# File: three_legged_auth.ex
+# Purpose: Require login from the Learn server before getting the access_token
+# Author: Mark Bykerk Kauffman
+
 defmodule ThreeLeggedAuth do
   import Plug.Conn
   require Logger

@@ -1,3 +1,4 @@
+# No longer used in the 3LO version of PhoenixDSK
 # Credit to https://github.com/paulfedory/how_to_watch_tv/blob/master/web/basic_auth.ex
 # https://medium.com/@paulfedory/basic-authentication-in-your-phoenix-app-fa24e57baa8
 defmodule BasicAuth do
