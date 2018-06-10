@@ -3,11 +3,13 @@ See BLACKBOARD_LICENSE.md for the license pertaining to the portions of this app
 
 See PHOENIX_LICENSE.md for the Phoenix Framework License
 
-## 3-Legged OAuth
-phoenixDSK3LO is a WORK IN PROGRESS. 
-Use the phoenixDSK application for now and you can give that REST APP a unique username and password that only
-you know and can log in with. Then phoenixDSK uses the secure Basic Auth mechanism to connect to the Learn server that you specify. phoenixDSK is great for a Learn Admin wanting to use the app to manage DSKs and row status of records on her Learn system. We're just 
-building this 3LO version out to demo 3LO and so you can sign in using a Learn account vs. setting up unique, separate, login to phoenixDSK.
+## phoenisDSK3LO is the 3-Legged OAuth version of phoenixDSK.
+Demo use of 3LO with Learn REST Application. 3LO is not necessary for the DSK tool because the admin will
+stand it up for their own use, not for others' use. 3LO lets you use Learn authentication to login to then
+REST App. The phoenixDSK application lets you give that REST APP a unique username and password that only
+you know and can log in with. Then phoenixDSK uses the secure 2LO mechanism to connect to the Learn server that you specify. phoenixDSK is fine for a Learn Admin wanting to use the app to manage DSKs and row status of records on her Learn system.
+
+We're just building this 3LO version out to demo 3LO authentication using a Learn account vs. setting up unique, separate, login to phoenixDSK. You'll need to sign in to Learn with a Learn admin account to use this application.
 
 ## Quick and Easy Deployment to Heroku:
 1. Get an application ID, key, and Secret from https://developer.blackboard.com
