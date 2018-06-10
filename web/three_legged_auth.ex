@@ -30,12 +30,20 @@ defmodule ThreeLeggedAuth do
   # First leg of three_legged_oauth - login to get a code.
   # The code is then used to get an access token.
   def get_code(conn, fqdn) do
+    IO.puts :stdio, "ENTER ThreeLeggedAuth.get_code"
     app_key = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:appkey]
 
     %{req_headers: req_headers } = conn
+    IO.puts :stdio, "*********** CONN ************"
+    IO.inspect conn, []
     headers_map = Enum.into req_headers, %{} # turn the list of tuples into a map
     host = headers_map["host"]
-    redirect_uri = "http://#{host}/code_callback"
+    x_forwarded_proto = headers_map["x-forwarded-proto"]
+    case x_forwarded_proto do
+      "https" -> redirect_uri = "https://#{host}/code_callback"
+      _ -> redirect_uri = "http://#{host}/code_callback"
+    end
+
     fqdn = Application.get_env(:phoenixDSK3LO, PhoenixDSK3LO.Endpoint)[:learnserver]
     fqdnAtom = String.to_atom(fqdn)
     # save our redirect_uri for use when we get the access_token
