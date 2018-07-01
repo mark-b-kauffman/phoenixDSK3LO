@@ -30,5 +30,5 @@
     "LEARNSERVER": "Replace this with the FQDN of your Learn server."
   },
   "scripts": {},
-  "success_url": "/register"
+  "success_url": "/"
 }
