@@ -16,6 +16,7 @@ you know and can log in with. Then phoenixDSK uses the secure 2LO mechanism to c
 We're just building this 3LO version out to demo 3LO authentication using a Learn account vs. setting up unique, separate, login to phoenixDSK. You'll need to sign in to Learn with a Learn admin account to use this application.
 
 ## Quick and Easy Deployment to Heroku:
+(**Read the above warning before you do this.**)
 1. Get an application ID, key, and Secret from https://developer.blackboard.com
 2. Set up the REST application on your Learn server using the application ID from #1.
 3. Click the Deploy button and fill in the application key, secret, and Learn URL.
