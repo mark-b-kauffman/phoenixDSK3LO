@@ -48,7 +48,7 @@ defmodule ThreeLeggedAuth do
     fqdnAtom = String.to_atom(fqdn)
     # save our redirect_uri for use when we get the access_token
     LearnRestClient.put(fqdnAtom, "REDIRECT_URI", redirect_uri)
-    redirect_url = "redirect_uri=#{redirect_uri}&response_type=code&client_id=#{app_key}&scope=read%20offline"
+    redirect_url = "redirect_uri=#{redirect_uri}&response_type=code&client_id=#{app_key}&scope=read%20write%20offline"
     IO.inspect redirect_uri, []
     options = [ domain: "localhost", path: "/", max_age: 100000*24*60*60]
     IO.inspect options, []
