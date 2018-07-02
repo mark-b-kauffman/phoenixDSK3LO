@@ -1,5 +1,5 @@
 # PhoenixDSK3LO
-See BLACKBOARD_LICENSE.md for the license pertaining to the portions of this application specific to Blackboard Learn.
+See BLACKBOARD_LICENSE.md for the license pertaining to the portions of this application specific to Blackboard Learn. Note that it states that you bear the entire liability for any issues arising from the use of this software.
 
 See PHOENIX_LICENSE.md for the Phoenix Framework License
 
