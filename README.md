@@ -3,7 +3,10 @@ See BLACKBOARD_LICENSE.md for the license pertaining to the portions of this app
 
 See PHOENIX_LICENSE.md for the Phoenix Framework License
 
-## phoenisDSK3LO is the 3-Legged OAuth version of phoenixDSK.
+## phoenixDSK3LO is the 3-Legged OAuth version of phoenixDSK.
+
+This is a WIP. There is a current design flaw that once you've logged in using 3LO, anyone can access the application without having to log in. The only thing 'securing' the application at that point is whether the URL is known. Don't leave this thing up and running. Better that you use phoenixDSK. It's HTTP Basic Authentication mechanism works as designed.
+
 Demo use of 3LO with Learn REST Application. 3LO is not necessary for the DSK tool because the admin will
 stand it up for their own use, not for others' use. 3LO lets you use Learn authentication to login to then
 REST App. The phoenixDSK application lets you give that REST APP a unique username and password that only
