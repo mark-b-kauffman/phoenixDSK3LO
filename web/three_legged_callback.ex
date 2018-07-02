@@ -1,4 +1,4 @@
-# File: three_legged_auth.ex
+# File: three_legged_callback.ex
 # Purpose: We come back here after the 3LO login. Save off the authorization code,
 #   then immediatly make a request for dsks that takes us through the code that
 #   gets an access_token.
