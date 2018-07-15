@@ -5,8 +5,8 @@ See PHOENIX_LICENSE.md for the Phoenix Framework License
 
 ## phoenixDSK3LO is the 3-Legged OAuth version of phoenixDSK.
 
-**This is a work in progress. I focused on building this out to demonstrate three-legged OAuth flow. That works, but Phoenix doesn't handle multiple users in the way I expected. (Due to my misunderstanding Phoenix.) Currently the 3LO works for one user, and once you've logged in using 3LO, anyone else can access the web application without having to log in.** The only thing 'securing' the application at that point is whether the URL is known & accessable.  
-Don't leave this up and running on Heroku. Either start it, use it, and shut it down, OR build and use it on your desktop, OR use https://github.com/mark-b-kauffman/phoenixDSK. phoenixDSK's HTTP Basic Authentication mechanism requires every individual browser session to log in.
+**This is a work in progress. I first focused on building this out, based on the phoenixDSK code, to demonstrate three-legged OAuth flow. That works, but more work needs doing to handle multiple users. Currently the 3LO works for one user, but once you've logged in using 3LO, anyone else can access the web application without having to log in.** The only thing 'securing' the application at that point is whether the URL is known & accessable. 
+Don't leave this up and running on Heroku. Better to build and use it on your desktop, OR use https://github.com/mark-b-kauffman/phoenixDSK. phoenixDSK's HTTP Basic Authentication mechanism requires every individual browser session to log in.
 
 Demo use of 3LO with Learn REST Application. 3LO is not necessary for the DSK tool because the admin will
 stand it up for their own use, not for others' use. 3LO lets you use Learn authentication to login to then
